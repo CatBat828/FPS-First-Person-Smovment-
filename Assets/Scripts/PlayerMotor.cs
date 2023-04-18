@@ -10,6 +10,12 @@ public class PlayerMotor : MonoBehaviour
     public float speed = 5f;
     public float gravity = -9.8f;
     public float jumpHeight = 3f;
+    // public CharacterController PlayerHeight;
+    public CapsuleCollider playerCol;
+    // public Transform player;
+    public Vector3 offset;
+    public float originalYScale;
+    public float crouchHeight;
 
     // Start is called before the first frame update
     void Start()
@@ -37,8 +43,28 @@ public class PlayerMotor : MonoBehaviour
         controller.Move(playerVelocity * Time.deltaTime);
     }
 
+    public void Crouch()
+    {
+        offset = transform.localScale;
+        originalYScale = offset.y;
+        offset.y = 0.6f * offset.y;
+        transform.localScale = offset;
+    }
+
+    public void Uncrouch()
+    {
+        offset = transform.localScale;
+        offset.y = originalYScale;
+        transform.localScale = offset;
+    }
+
     public void Jump()
     {
         playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);
     }
+}
+
+public class Crouch : MonoBehaviour
+{
+
 }
