@@ -10,6 +10,7 @@ public class InputManager : MonoBehaviour
 
     private PlayerMotor motor;
     private PlayerLook look;
+    private PlayerGrappling grapple;
 
     // Start is called before the first frame update
     void Awake()
@@ -18,11 +19,14 @@ public class InputManager : MonoBehaviour
         onFoot = playerInput.OnFoot;
         motor = GetComponent<PlayerMotor>();
         look = GetComponent<PlayerLook>();
+        grapple = GetComponent<PlayerGrappling>();
         
         onFoot.Jump.performed += ctx => motor.Jump();
 
         onFoot.Crouch.performed += ctx => motor.Crouch();
         onFoot.Crouch.canceled += ctx => motor.Uncrouch();
+
+        onFoot.Grappling.performed += ctx => grapple.StartGrapple();
     }
 
     // Update is called once per frame
@@ -37,7 +41,7 @@ public class InputManager : MonoBehaviour
     }
     private void OnEnable()
     {
-        // console.log('on enable');
+        // console.log("on enable");
         onFoot.Enable();
     }
 

@@ -17,6 +17,19 @@ public class PlayerMotor : MonoBehaviour
     public float originalYScale;
     public float crouchHeight;
 
+    public Rigidbody rb;
+
+    public MovementState state;
+
+    public enum MovementState
+    {
+        freeze,
+    }
+
+    public bool freeze;
+
+    public bool activeGrapple;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +40,15 @@ public class PlayerMotor : MonoBehaviour
     void Update()
     {
         isGrounded = controller.isGrounded;
+
+        if (freeze)
+        {
+            playerVelocity = Vector3.zero;
+            speed = 0;
+        }
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     public void ProcessMove(Vector2 input)
@@ -62,9 +84,33 @@ public class PlayerMotor : MonoBehaviour
     {
         playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);
     }
+
+    public void JumpToPosition(Vector3 targetPosition, float trajectoryHeight)
+    {
+        activeGrapple = true;
+
+        velocityToSet = CalculateJumpVelocity(transform.position, targetPosition, trajectoryHeight);
+        Invoke(nameof(SetVelocity), 0.1f);
+    }
+
+    private Vector3 velocityToSet;
+
+    private void SetVelocity()
+    {
+        playerVelocity = velocityToSet;
+    }
+
+    public Vector3 CalculateJumpVelocity(Vector3 startPoint, Vector3 endPoint, float trajectoryHeight)
+    {
+        float gravity = Physics.gravity.y;
+        float displacementY = endPoint.y - startPoint.y;
+        Vector3 displacementXZ = new Vector3(endPoint.x - startPoint.x, 0f, endPoint.z - startPoint.z);
+
+        Vector3 velocityY = Vector3.up * Mathf.Sqrt(-2 * gravity * trajectoryHeight);
+        Vector3 velocityXZ = displacementXZ / (Mathf.Sqrt(-2 * trajectoryHeight / gravity)
+            + Mathf.Sqrt(2 * (displacementY - trajectoryHeight) / gravity));
+
+        return velocityXZ + velocityY;
+    }
 }
 
-public class Crouch : MonoBehaviour
-{
-
-}
