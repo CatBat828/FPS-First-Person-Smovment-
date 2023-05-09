@@ -933,6 +933,8 @@ MonoBehaviour:
   crouchHeight: 0
   rb: {fileID: 0}
   state: 0
+  airDrag: 0.02
+  groundDrag: 0.2
   freeze: 0
   activeGrapple: 0
 --- !u!4 &608250628 stripped
@@ -961,7 +963,33 @@ MonoBehaviour:
   maxGrappleDistance: 25
   grappleDelayTime: 0.25
   overshootYAxis: 2
+  speed: 5
   grapplingCd: 1
+--- !u!114 &608250633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608250620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a82077bd13dbb1459f722108fe1536f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSwingDistance: 20
+  whatIsSwingable:
+    serializedVersion: 2
+    m_Bits: 2147483647
+  swinging: 0
+  swingPoint: {x: 0, y: 0, z: 0}
+  motor: {fileID: 0}
+  swingExtension: 3
+  grappleMax: 5
+  grappleMin: 0.5
+  grappleSpeed: 5
+  freeEnergy: 1.05
+  motorPercent: 0.6
 --- !u!1 &627295234
 GameObject:
   m_ObjectHideFlags: 0

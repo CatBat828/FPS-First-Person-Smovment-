@@ -11,6 +11,7 @@ public class InputManager : MonoBehaviour
     private PlayerMotor motor;
     private PlayerLook look;
     private PlayerGrappling grapple;
+	private PlayerSwing swing;
 
     // Start is called before the first frame update
     void Awake()
@@ -20,6 +21,7 @@ public class InputManager : MonoBehaviour
         motor = GetComponent<PlayerMotor>();
         look = GetComponent<PlayerLook>();
         grapple = GetComponent<PlayerGrappling>();
+		swing = GetComponent<PlayerSwing>();
         
         onFoot.Jump.performed += ctx => motor.Jump();
 
@@ -27,6 +29,9 @@ public class InputManager : MonoBehaviour
         onFoot.Crouch.canceled += ctx => motor.Uncrouch();
 
         onFoot.Grappling.performed += ctx => grapple.StartGrapple();
+
+		onFoot.Swing.performed += ctx => swing.StartSwing();
+		onFoot.Swing.canceled += ctx => swing.EndSwing();
     }
 
     // Update is called once per frame
@@ -34,6 +39,10 @@ public class InputManager : MonoBehaviour
     {
         // add some text.
         motor.ProcessMove(onFoot.Movement.ReadValue<Vector2>());
+		if (swing.is_swinging())
+		{
+			swing.ExecuteSwing();
+		}
     }
     private void LateUpdate()
     {

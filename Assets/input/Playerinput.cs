@@ -71,6 +71,15 @@ public partial class @Playerinput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Swing"",
+                    ""type"": ""Button"",
+                    ""id"": ""9ea069f8-0120-46d5-ba45-3aa5c07221a8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -271,6 +280,28 @@ public partial class @Playerinput : IInputActionCollection2, IDisposable
                     ""action"": ""Grappling"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""607deb93-4854-4833-a2b2-0dac5c545eeb"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Swing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""681a4853-72d9-4927-8bc9-55cbfbebea29"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Swing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -284,6 +315,7 @@ public partial class @Playerinput : IInputActionCollection2, IDisposable
         m_OnFoot_Look = m_OnFoot.FindAction("Look", throwIfNotFound: true);
         m_OnFoot_Crouch = m_OnFoot.FindAction("Crouch", throwIfNotFound: true);
         m_OnFoot_Grappling = m_OnFoot.FindAction("Grappling", throwIfNotFound: true);
+        m_OnFoot_Swing = m_OnFoot.FindAction("Swing", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -348,6 +380,7 @@ public partial class @Playerinput : IInputActionCollection2, IDisposable
     private readonly InputAction m_OnFoot_Look;
     private readonly InputAction m_OnFoot_Crouch;
     private readonly InputAction m_OnFoot_Grappling;
+    private readonly InputAction m_OnFoot_Swing;
     public struct OnFootActions
     {
         private @Playerinput m_Wrapper;
@@ -357,6 +390,7 @@ public partial class @Playerinput : IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_OnFoot_Look;
         public InputAction @Crouch => m_Wrapper.m_OnFoot_Crouch;
         public InputAction @Grappling => m_Wrapper.m_OnFoot_Grappling;
+        public InputAction @Swing => m_Wrapper.m_OnFoot_Swing;
         public InputActionMap Get() { return m_Wrapper.m_OnFoot; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -381,6 +415,9 @@ public partial class @Playerinput : IInputActionCollection2, IDisposable
                 @Grappling.started -= m_Wrapper.m_OnFootActionsCallbackInterface.OnGrappling;
                 @Grappling.performed -= m_Wrapper.m_OnFootActionsCallbackInterface.OnGrappling;
                 @Grappling.canceled -= m_Wrapper.m_OnFootActionsCallbackInterface.OnGrappling;
+                @Swing.started -= m_Wrapper.m_OnFootActionsCallbackInterface.OnSwing;
+                @Swing.performed -= m_Wrapper.m_OnFootActionsCallbackInterface.OnSwing;
+                @Swing.canceled -= m_Wrapper.m_OnFootActionsCallbackInterface.OnSwing;
             }
             m_Wrapper.m_OnFootActionsCallbackInterface = instance;
             if (instance != null)
@@ -400,6 +437,9 @@ public partial class @Playerinput : IInputActionCollection2, IDisposable
                 @Grappling.started += instance.OnGrappling;
                 @Grappling.performed += instance.OnGrappling;
                 @Grappling.canceled += instance.OnGrappling;
+                @Swing.started += instance.OnSwing;
+                @Swing.performed += instance.OnSwing;
+                @Swing.canceled += instance.OnSwing;
             }
         }
     }
@@ -411,5 +451,6 @@ public partial class @Playerinput : IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnGrappling(InputAction.CallbackContext context);
+        void OnSwing(InputAction.CallbackContext context);
     }
 }
