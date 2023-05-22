@@ -84,6 +84,7 @@ public class PlayerMotor : MonoBehaviour
 
 	public void Uncrouch()
 	{
+		Debug.Log("hello");
 		offset = transform.localScale;
 		offset.y = originalYScale;
 		transform.localScale = offset;

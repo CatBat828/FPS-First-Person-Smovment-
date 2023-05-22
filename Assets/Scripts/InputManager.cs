@@ -39,10 +39,6 @@ public class InputManager : MonoBehaviour
     {
         // add some text.
         motor.ProcessMove(onFoot.Movement.ReadValue<Vector2>());
-		if (swing.is_swinging())
-		{
-			swing.ExecuteSwing();
-		}
     }
     private void LateUpdate()
     {

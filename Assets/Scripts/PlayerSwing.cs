@@ -5,72 +5,81 @@ using UnityEngine;
 
 public class PlayerSwing : MonoBehaviour
 {
-	public float maxSwingDistance = 20;
-	public LayerMask whatIsSwingable;
-	public bool swinging = false;
-	public Vector3 swingPoint;
-	public PlayerMotor motor;
+	 private LineRenderer lr;
+    private Vector3 grapplePoint;
+    public LayerMask whatIsGrappleable;
+    public Transform gunTip, camera, player;
+    public float maxDistance = 100f;
+    public SpringJoint joint;
 
-	public float swingExtension = 3.0f;
-	public float grappleMax = 5.0f;
-	public float grappleMin = 0.5f;
-	public float grappleSpeed = 5.0f;
-	public float freeEnergy = 1.05f;
-	public float motorPercent = 0.05f;
-	// Start is called before the first frame update
-	public void StartSwing()
-	{
-		Debug.Log("swing");
-		Transform cam = gameObject.transform.GetChild(0);
-		Debug.Log(gameObject);
-		Debug.Log(cam.gameObject);
-		Debug.Log(cam.position);
-		RaycastHit hit;
-		if (Physics.Raycast(cam.position, cam.forward, out hit, maxSwingDistance, whatIsSwingable))
-		{
-			swingPoint = hit.point;
-			swinging = true;
-		}
-		if (motor == null)
-		{
-			motor = gameObject.GetComponent<PlayerMotor>();
-		}
-	}
+    void Awake() {
+        lr = GetComponent<LineRenderer>();
+    }
 
-	public bool is_swinging()
-	{
-		return swinging;
-	}
+    void Update() 
+    {
 
-	private float remap(float val, float min, float max) // 0-1 -> min - max
-	{
-		return (1 - 1 / val /*0-1*/) * (max - min) + min /*standard 0-1 -> a-b remap*/ ;
-	}
+    }
 
-	public void ExecuteSwing()
-	{
-		Debug.Log("Executing");
-		Vector3 delta = swingPoint - gameObject.transform.position;
-		float mag = delta.sqrMagnitude;
-		Debug.Log(mag.ToString());
-		Vector3 dir = delta.normalized;
-		Vector3 force = dir * remap(mag, grappleMin, grappleMax) * grappleSpeed;
-		if (mag > Math.Pow(swingExtension * maxSwingDistance, 2)) { EndSwing(); }
-		Vector3 vel = motor.GetVelocity();
-		motor.AddForce(force * Time.fixedDeltaTime); // fixed update function
-		motor.SetVelocity(
-			Math.Min
-				(motor.GetVelocity().magnitude,
-				(vel * freeEnergy).magnitude)
-			*
-				(motor.GetVelocity() * motorPercent +
-				force * (1 - motorPercent)).normalized);
-	}
+    //Called after Update
+    void LateUpdate() {
+        DrawRope();
+    }
 
-	// Update is called once per frame
-	public void EndSwing()
-	{
-		Debug.Log("end");
-		swinging = false;
-	}
+    /// <summary>
+    /// Call whenever we want to start a grapple
+    /// </summary>
+    public  void StartSwing() {
+        Debug.Log("hello");
+        RaycastHit hit;
+        if (Physics.Raycast(camera.position, camera.forward, out hit, maxDistance, whatIsGrappleable)) {
+            grapplePoint = hit.point;
+            joint = player.gameObject.AddComponent<SpringJoint>();
+            joint.autoConfigureConnectedAnchor = false;
+            joint.connectedAnchor = grapplePoint;
+
+            float distanceFromPoint = Vector3.Distance(player.position, grapplePoint);
+
+            //The distance grapple will try to keep from grapple point. 
+            joint.maxDistance = distanceFromPoint * 0.8f;
+            joint.minDistance = distanceFromPoint * 0.25f;
+
+            //Adjust these values to fit your game.
+            joint.spring = 4.5f;
+            joint.damper = 7f;
+            joint.massScale = 4.5f;
+
+            lr.positionCount = 2;
+            currentGrapplePosition = gunTip.position;
+        }
+    }
+
+
+    /// <summary>
+    /// Call whenever we want to stop a grapple
+    /// </summary>
+    public void EndSwing() {
+        lr.positionCount = 0;
+        Destroy(joint);
+    }
+
+    private Vector3 currentGrapplePosition;
+    
+    void DrawRope() {
+        //If not grappling, don't draw rope
+        if (!joint) return;
+
+        currentGrapplePosition = Vector3.Lerp(currentGrapplePosition, grapplePoint, Time.deltaTime * 8f);
+        
+        lr.SetPosition(0, gunTip.position);
+        lr.SetPosition(1, currentGrapplePosition);
+    }
+
+    public bool IsGrappling() {
+        return joint != null;
+    }
+
+    public Vector3 GetGrapplePoint() {
+        return grapplePoint;
+    }
 }
