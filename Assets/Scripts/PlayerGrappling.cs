@@ -12,7 +12,7 @@ public class PlayerGrappling : MonoBehaviour
     public LayerMask whatIsGrappleable;
     public LineRenderer lr;
 
-    public float maxGrappleDistance = 25f;
+    public float maxGrappleDistance = 100f;
     public float grappleDelayTime = 0.25f;
     public float overshootYAxis;
     public float speed = 5f;

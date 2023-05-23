@@ -26,7 +26,7 @@ public class PlayerSwing : MonoBehaviour
             return;
 		float dist = Math.Min(Vector3.Distance(player.position,grapplePoint),grapplingDistance);
 		Vector3 dir = (player.position-grapplePoint).normalized;
-		player.position = dir*dist+grapplePoint;
+		player.GetComponent<CharacterController>().Move(dir*dist+grapplePoint-player.position);
     }
 
     //Called after Update
@@ -56,9 +56,7 @@ public class PlayerSwing : MonoBehaviour
 
             float distanceFromPoint = Vector3.Distance(player.position, grapplePoint);
             if (distanceFromPoint > maxDistance)
-            {
                 return;
-            }
 			grappling = true;
             grapplingDistance = distanceFromPoint;
             lineRenderer.positionCount = 2;
