@@ -16,12 +16,13 @@ public class PlayerMotor : MonoBehaviour
 	public Vector3 offset;
 	public float originalYScale;
 	public float crouchHeight;
+	public bool crouched;
 
 	public Rigidbody rb;
 
 	public MovementState state;
-	public float airDrag = 0.02f;
-	public float groundDrag = 0.2f;
+	public float airDrag = 0.01f;
+	public float groundDrag = 0.02f;
 
 	public enum MovementState
 	{
@@ -31,6 +32,23 @@ public class PlayerMotor : MonoBehaviour
 	public bool freeze;
 
 	public bool activeGrapple;
+
+	void FixedUpdate()
+    {
+		if (crouched)
+        {
+			float oldy = playerVelocity.y;
+            if (isGrounded)
+            {
+                playerVelocity = playerVelocity.normalized*10.5f;
+            }
+            else
+            {
+				playerVelocity = playerVelocity.normalized * 1.5f;
+            }
+			playerVelocity.y = oldy;
+        }
+    }
 
 	// Start is called before the first frame update
 	void Start()
@@ -57,42 +75,44 @@ public class PlayerMotor : MonoBehaviour
 		Cursor.lockState = CursorLockMode.Confined;
 	}
 
-	public void ProcessMove(Vector2 input)
+	public void ProcessMove(Vector2 input)//process for movement, gravity, and friction
 	{
 		Vector3 moveDirection = Vector3.zero;
-		moveDirection.x = input.x;
+		moveDirection.x = input.x;//move driection input
 		moveDirection.z = input.y;
-		Vector3 temporal = transform.TransformDirection(moveDirection) * speed * Time.deltaTime;
+		Vector3 temporal = transform.TransformDirection(moveDirection) * speed * Time.deltaTime;//calulating the movement
 		controller.Move(temporal);
-		playerVelocity.y += gravity * Time.deltaTime;
+		playerVelocity.y += gravity * Time.deltaTime;//gravity
 		playerVelocity += temporal;
 		if (isGrounded && playerVelocity.y < 0)
 		{
 			playerVelocity.y = -2f;
 		}
-		playerVelocity *= 1 - (isGrounded ? groundDrag : airDrag);
-		controller.Move(playerVelocity * Time.deltaTime);
+		playerVelocity *= 1 - (isGrounded ? groundDrag : airDrag);//slowing down
+		controller.Move(playerVelocity * Time.deltaTime);//move
 	}
 
 	public void Crouch()
 	{
+		crouched = true;
 		offset = transform.localScale;
 		originalYScale = offset.y;
 		offset.y = 0.6f * offset.y;
-		transform.localScale = offset;
+		transform.localScale = offset;//scale the player
 	}
 
 	public void Uncrouch()
 	{
+		crouched = false;
 		Debug.Log("hello");
 		offset = transform.localScale;
 		offset.y = originalYScale;
-		transform.localScale = offset;
+		transform.localScale = offset;//unscale the player
 	}
 
 	public void Jump()
 	{
-		if (!isGrounded)
+		if (!isGrounded)//don't jump mid air
 			return;
 		playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);
 	}
@@ -107,7 +127,7 @@ public class PlayerMotor : MonoBehaviour
 
 	public void AddForce(Vector3 velocity)
 	{
-		playerVelocity += velocity;
+		playerVelocity += velocity;//player speed
 	}
 
 	public Vector3 GetVelocity()
@@ -115,7 +135,7 @@ public class PlayerMotor : MonoBehaviour
 		return playerVelocity;
 	}
 
-	public void SetVelocity(Vector3 velocity) // consider public velocity? - public getter and setter
+	public void SetVelocity(Vector3 velocity)
 	{
 		playerVelocity = velocity;
 	}
@@ -127,7 +147,7 @@ public class PlayerMotor : MonoBehaviour
 		playerVelocity = velocityToSet;
 	}
 
-	public Vector3 CalculateJumpVelocity(Vector3 startPoint, Vector3 endPoint, float trajectoryHeight)
+	public Vector3 CalculateJumpVelocity(Vector3 startPoint, Vector3 endPoint, float trajectoryHeight)//calcuation for jump vvelocity
 	{
 		float gravity = Physics.gravity.y;
 		float displacementY = endPoint.y - startPoint.y;

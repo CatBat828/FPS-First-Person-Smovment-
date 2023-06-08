@@ -493,7 +493,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5387905489073891601, guid: 342b71cb5077e3742bb5c686f8064cf8, type: 3}
       propertyPath: m_Name
-      value: Player
+      value: Player Variant
       objectReference: {fileID: 0}
     - target: {fileID: 5387905489073891612, guid: 342b71cb5077e3742bb5c686f8064cf8, type: 3}
       propertyPath: m_RootOrder
@@ -765,12 +765,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a82077bd13dbb1459f722108fe1536f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grapplePoint: {x: 0, y: 0, z: 0}
+  SwingPoint: {x: 0, y: 0, z: 0}
   whatIsGrappleable:
     serializedVersion: 2
     m_Bits: 2147483647
-  gunTip: {fileID: 524987209}
+  GunTip: {fileID: 524987209}
   camera: {fileID: 1030444409}
   player: {fileID: 6766443178196770499}
-  grappling: 0
-  grapplingDistance: 0
+  Swining: 0
+  SwiningDistance: 0

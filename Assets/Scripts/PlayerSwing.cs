@@ -5,28 +5,28 @@ using UnityEngine;
 
 public class PlayerSwing : MonoBehaviour
 {
-    private LineRenderer lineRenderer;
-    public Vector3 grapplePoint;
+    private LineRenderer GunlineRenderer;
+    public Vector3 SwingPoint;
     public LayerMask whatIsGrappleable;
-    public Transform gunTip,
+    public Transform GunTip,
         camera,
         player;
-    private float maxDistance = 100f;
-    public bool grappling = false;
-    public float grapplingDistance = 0f;
+    private float MaxDistance = 100f;
+    public bool Swining = false;
+    public float SwiningDistance = 0f;
 
-    void Awake()
+    void Awake() //get linerender
     {
-        lineRenderer = GetComponent<LineRenderer>();
+        GunlineRenderer = GetComponent<LineRenderer>();
     }
 
     void Update()
     {
-        if (!grappling)
-            return;
-		float dist = Math.Min(Vector3.Distance(player.position,grapplePoint),grapplingDistance);
-		Vector3 dir = (player.position-grapplePoint).normalized;
-		player.GetComponent<CharacterController>().Move(dir*dist+grapplePoint-player.position);
+        if (!Swining)
+            return; //if arn't swing stop the swing
+		float dist = Math.Min(Vector3.Distance(player.position,SwingPoint),SwiningDistance);
+		Vector3 dir = (player.position-SwingPoint).normalized;
+		player.GetComponent<CharacterController>().Move(dist * dir + SwingPoint - player.position);//moving the player in a swining motion
     }
 
     //Called after Update
@@ -36,41 +36,42 @@ public class PlayerSwing : MonoBehaviour
     }
 
     /// <summary>
-    /// Call whenever we want to start a grapple
+    /// Call whenever we want to start a swing
     /// </summary>
     public void StartSwing()
     {
-		grappling = false;
+        Debug.Log("hello");
+        Swining = false;
         RaycastHit hit;
         if (
             Physics.Raycast(
                 camera.position,
                 camera.forward,
                 out hit,
-                maxDistance,
+                MaxDistance,
                 whatIsGrappleable
             )
         )
         {
-            grapplePoint = hit.point;
+            SwingPoint = hit.point;
 
-            float distanceFromPoint = Vector3.Distance(player.position, grapplePoint);
-            if (distanceFromPoint > maxDistance)
+            float distanceFromPoint = Vector3.Distance(player.position, SwingPoint);
+            if (distanceFromPoint > MaxDistance)
                 return;
-			grappling = true;
-            grapplingDistance = distanceFromPoint;
-            lineRenderer.positionCount = 2;
-            currentGrapplePosition = gunTip.position;
+			Swining = true;
+            SwiningDistance = distanceFromPoint;
+            GunlineRenderer.positionCount = 2;
+            currentGrapplePosition = GunTip.position;
         }
     }
 
     /// <summary>
-    /// Call whenever we want to stop a grapple
+    /// Call whenever we want to stop a swing
     /// </summary>
     public void EndSwing()
     {
-		grappling = false;
-        lineRenderer.positionCount = 0;
+		Swining = false;
+        GunlineRenderer.positionCount = 0;
     }
 
     private Vector3 currentGrapplePosition;
@@ -79,11 +80,11 @@ public class PlayerSwing : MonoBehaviour
     {
         currentGrapplePosition = Vector3.Lerp(
             currentGrapplePosition,
-            grapplePoint,
+            SwingPoint,
             Time.deltaTime * 8f
         );
 
-        lineRenderer.SetPosition(0, gunTip.position);
-        lineRenderer.SetPosition(1, currentGrapplePosition);
+        GunlineRenderer.SetPosition(0, GunTip.position);
+        GunlineRenderer.SetPosition(1, currentGrapplePosition);
     }
 }
