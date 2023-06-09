@@ -33,20 +33,20 @@ public class PlayerMotor : MonoBehaviour
 
 	public bool activeGrapple;
 
-	void FixedUpdate()
+	void FixedUpdate()//50 times a frame
     {
-		if (crouched)
+		if (crouched)//handle sliding
         {
-			float oldy = playerVelocity.y;
+			float oldy = playerVelocity.y;//store y speed
             if (isGrounded)
             {
-                playerVelocity = playerVelocity.normalized*10.5f;
+                playerVelocity = playerVelocity.normalized*10.5f;//slide
             }
             else
             {
-				playerVelocity = playerVelocity.normalized * 1.5f;
+				playerVelocity = playerVelocity.normalized * 10.5f;
             }
-			playerVelocity.y = oldy;
+			playerVelocity.y = oldy;//dont fly
         }
     }
 
@@ -61,17 +61,17 @@ public class PlayerMotor : MonoBehaviour
 	{
 		isGrounded = controller.isGrounded;
 
-		if (freeze)
+		if (freeze)//dont move if we cant
 		{
 			playerVelocity = Vector3.zero;
 			speed = 0;
 		}
-		else
+		else//move if we can
 		{
 			speed = 5;
 		}
 
-		Cursor.visible = false;
+		Cursor.visible = false;//dont show mouse
 		Cursor.lockState = CursorLockMode.Confined;
 	}
 
@@ -81,12 +81,12 @@ public class PlayerMotor : MonoBehaviour
 		moveDirection.x = input.x;//move driection input
 		moveDirection.z = input.y;
 		Vector3 temporal = transform.TransformDirection(moveDirection) * speed * Time.deltaTime;//calulating the movement
-		controller.Move(temporal);
+		controller.Move(temporal);//move unlaggy
 		playerVelocity.y += gravity * Time.deltaTime;//gravity
-		playerVelocity += temporal;
+		playerVelocity += temporal;//gain speed
 		if (isGrounded && playerVelocity.y < 0)
 		{
-			playerVelocity.y = -2f;
+			playerVelocity.y = -2f;//dont fall through flor
 		}
 		playerVelocity *= 1 - (isGrounded ? groundDrag : airDrag);//slowing down
 		controller.Move(playerVelocity * Time.deltaTime);//move
@@ -95,7 +95,7 @@ public class PlayerMotor : MonoBehaviour
 	public void Crouch()
 	{
 		crouched = true;
-		offset = transform.localScale;
+		offset = transform.localScale;//dont mess with camer that much
 		originalYScale = offset.y;
 		offset.y = 0.6f * offset.y;
 		transform.localScale = offset;//scale the player
@@ -105,7 +105,7 @@ public class PlayerMotor : MonoBehaviour
 	{
 		crouched = false;
 		Debug.Log("hello");
-		offset = transform.localScale;
+		offset = transform.localScale;//fix camera
 		offset.y = originalYScale;
 		transform.localScale = offset;//unscale the player
 	}
@@ -114,7 +114,7 @@ public class PlayerMotor : MonoBehaviour
 	{
 		if (!isGrounded)//don't jump mid air
 			return;
-		playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);
+		playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);//gravity big jump to make easier editing
 	}
 
 	public void JumpToPosition(Vector3 targetPosition, float trajectoryHeight)
@@ -122,7 +122,7 @@ public class PlayerMotor : MonoBehaviour
 		activeGrapple = true;
 
 		velocityToSet = CalculateJumpVelocity(transform.position, targetPosition, trajectoryHeight);
-		Invoke(nameof(SetVelocity), 0.1f);
+		Invoke(nameof(SetVelocity), 0.1f);//set volcity after 0.1s
 	}
 
 	public void AddForce(Vector3 velocity)
@@ -130,7 +130,7 @@ public class PlayerMotor : MonoBehaviour
 		playerVelocity += velocity;//player speed
 	}
 
-	public Vector3 GetVelocity()
+	public Vector3 GetVelocity() //velocity pruvate
 	{
 		return playerVelocity;
 	}
@@ -142,22 +142,22 @@ public class PlayerMotor : MonoBehaviour
 
 	private Vector3 velocityToSet;
 
-	private void SetVelocity()
+	private void SetVelocity() // old dont use
 	{
 		playerVelocity = velocityToSet;
 	}
 
 	public Vector3 CalculateJumpVelocity(Vector3 startPoint, Vector3 endPoint, float trajectoryHeight)//calcuation for jump vvelocity
 	{
-		float gravity = Physics.gravity.y;
-		float displacementY = endPoint.y - startPoint.y;
-		Vector3 displacementXZ = new Vector3(endPoint.x - startPoint.x, 0f, endPoint.z - startPoint.z);
+		float gravity = Physics.gravity.y;//get gravity
+		float displacementY = endPoint.y - startPoint.y;//get distance
+		Vector3 displacementXZ = new Vector3(endPoint.x - startPoint.x, 0f, endPoint.z - startPoint.z);//get change
 
-		Vector3 velocityY = Vector3.up * Mathf.Sqrt(-2 * gravity * trajectoryHeight);
-		Vector3 velocityXZ = displacementXZ / (Mathf.Sqrt(-2 * trajectoryHeight / gravity)
+		Vector3 velocityY = Vector3.up * Mathf.Sqrt(-2 * gravity * trajectoryHeight);//do height
+		Vector3 velocityXZ = displacementXZ / (Mathf.Sqrt(-2 * trajectoryHeight / gravity)//do not height
 			+ Mathf.Sqrt(2 * (displacementY - trajectoryHeight) / gravity));
 
-		return velocityXZ + velocityY;
+		return velocityXZ + velocityY; // add together
 	}
 }
 
