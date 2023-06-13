@@ -24,6 +24,8 @@ public class PlayerMotor : MonoBehaviour
 	public float airDrag = 0.01f;
 	public float groundDrag = 0.02f;
 
+	private Vector3 start;
+
 	public enum MovementState
 	{
 		freeze,
@@ -53,7 +55,8 @@ public class PlayerMotor : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		controller = GetComponent<CharacterController>();
+		controller = GetComponent<CharacterController>(); // we ned this
+		start = gameObject.transform.position; // save start
 	}
 
 	// Update is called once per frame
@@ -73,6 +76,12 @@ public class PlayerMotor : MonoBehaviour
 
 		Cursor.visible = false;//dont show mouse
 		Cursor.lockState = CursorLockMode.Confined;
+		if (gameObject.transform.position.y < -50f) // when he faoll
+		{
+			controller.Move(start - gameObject.transform.position);
+			gameObject.transform.position = start; // dont fall
+			
+		} 
 	}
 
 	public void ProcessMove(Vector2 input)//process for movement, gravity, and friction
