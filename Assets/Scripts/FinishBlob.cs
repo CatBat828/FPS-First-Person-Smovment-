@@ -9,7 +9,6 @@ public class FinishBlob : MonoBehaviour
     {
             if (other.gameObject.tag == "Player")
             {
-                print("finish.");
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             }
     }
