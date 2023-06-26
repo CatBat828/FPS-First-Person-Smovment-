@@ -724,6 +724,7 @@ MonoBehaviour:
   offset: {x: 0, y: 0, z: 0}
   originalYScale: 0
   crouchHeight: 0
+  crouched: 0
   rb: {fileID: 0}
   state: 0
   airDrag: 0.02
